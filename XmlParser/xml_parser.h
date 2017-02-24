@@ -10,7 +10,8 @@ namespace xml
 	class Parser
 	{
 	public:
-		void parse();
+		void parse(const string& data);
+
 	private:
 		string content_;
 

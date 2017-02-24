@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 namespace xml
 {
@@ -18,16 +19,19 @@ namespace DOM
 	class NodeList;
 
 	using DOMString = std::vector<unsigned short>;
+	using std::string;
 
 	class Document : public Node
 	{
 	public:
-		const DocumentType        doctype;
-		const DOMImplementation   implementation;
-		const Element             documentElement;
-		Element					  createElement(DOMString tagName) raises(DOMException);
-		DocumentFragment          createDocumentFragment() noexcept;
-		Text                      createTextNode(DOMString data) noexcept;
+		Document() = default;
+		Document(const char* filename) : filename_(filename) {};
+		//const DocumentType        doctype;
+		//const DOMImplementation   implementation;
+		//const Element             documentElement;
+		Element					  create_Element(DOMString tagName) raises(DOMException);
+		DocumentFragment          create_DocumentFragment() noexcept;
+		Text                      create_TextNode(DOMString data) noexcept;
 		Comment                   createComment(DOMString data) noexcept;
 		CDATASection              createCDATASection(DOMString data) raises(DOMException);
 		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data) raises(DOMException);
@@ -37,15 +41,27 @@ namespace DOM
 		void parse() 
 		{
 			Parser parser;
-			parser.parse();
+			parser.parse(load_file(filename_));
 		};
+		
+	private:
+		const char* filename_;
 	};
+
+	const string&
+	load_file(const char* filename)
+	{
+		string data;
+
+		return data;
+	}
 
 	class DocumentFragment : public Node {};
 
 	class Node 
 	{
 	public:
+
 		// NodeType
 		const unsigned short      ELEMENT_NODE = 1;
 		const unsigned short      ATTRIBUTE_NODE = 2;
