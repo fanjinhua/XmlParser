@@ -25,36 +25,24 @@ namespace DOM
 	{
 	public:
 		Document() = default;
-		Document(const char* filename) : filename_(filename) {};
+		//Document(const char* filename) : filename_(filename) {};
 		//const DocumentType        doctype;
 		//const DOMImplementation   implementation;
 		//const Element             documentElement;
-		Element					  create_Element(DOMString tagName) raises(DOMException);
+		Element					  create_Element(DOMString tagName);// raises(DOMException);
 		DocumentFragment          create_DocumentFragment() noexcept;
 		Text                      create_TextNode(DOMString data) noexcept;
 		Comment                   createComment(DOMString data) noexcept;
-		CDATASection              createCDATASection(DOMString data) raises(DOMException);
-		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data) raises(DOMException);
-		Attr                      createAttribute(DOMString name) raises(DOMException);
-		EntityReference           createEntityReference(DOMString name) raises(DOMException);
+		CDATASection              createCDATASection(DOMString data); //raises(DOMException);
+		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
+		Attr                      createAttribute(DOMString name); //raises(DOMException);
+		EntityReference           createEntityReference(DOMString name); //raises(DOMException);
 		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
-		void parse() 
-		{
-			Parser parser;
-			parser.parse(load_file(filename_));
-		};
-		
 	private:
-		const char* filename_;
+
 	};
 
-	const string&
-	load_file(const char* filename)
-	{
-		string data;
 
-		return data;
-	}
 
 	class DocumentFragment : public Node {};
 
@@ -88,12 +76,12 @@ namespace DOM
 		Node* previousSibling;
 		Node* nextSibling;
 		NamedNodeMap attributes;
-		Document  ownerDocument;
+		Document*  ownerDocument;
 
-		virtual Node* insertBefore(Node* newChild, Node refChild) raise(DOMException);
-		virtual Node* replaceChild(Node newChild, Node oldChild) raise(DOMException);
-		virtual Node* removeChild(Node oldChild) raises(DOMException);
-		virtual Node* appendChild(Node newChild) raises(DOMException);
+		virtual Node* insertBefore(Node* newChild, Node* refChild); //raise(DOMException);
+		virtual Node* replaceChild(Node* newChild, Node* oldChild); //raise(DOMException);
+		virtual Node* removeChild(Node* oldChild);// raises(DOMException);
+		virtual Node* appendChild(Node* newChild); //raises(DOMException);
 		virtual bool hasChildNodes() = 0;
 		virtual Node* cloneNode(bool deep);
 	};
@@ -101,7 +89,7 @@ namespace DOM
 	class NodeList 
 	{
 	public:
-		Node item(unsigned long index);
+		Node* item(unsigned long index);
 	private:
 		const unsigned long length;
 	};
@@ -109,25 +97,25 @@ namespace DOM
 	class NamedNodeMap 
 	{
 	public:
-		Node getNamedItem(DOMString name);
-		Node setNamedItem(Node arg) raises(DOMException);
-		Node removeNamedItem(DOMString name) raises(DOMException);
-		Node item(unsigned long index);
+		Node* getNamedItem(DOMString name);
+		Node* setNamedItem(Node* arg);// raises(DOMException);
+		Node* removeNamedItem(DOMString name);// raises(DOMException);
+		Node* item(unsigned long index);
 	private:
 		const unsigned long length;
 	};
 
 	class CharacterData : public Node 
 	{
-		attribute  DOMString            data;
+		DOMString            data;
 		// raises(DOMException) on setting
 		// raises(DOMException) on retrieval
-		readonly attribute  unsigned long        length;
-		DOMString   substringData(unsigned long offset, unsigned long count)raises(DOMException);
-		void appendData(DOMString arg) raises(DOMException);
-		void insertData(unsigned long offset, DOMString arg) raises(DOMException);
-		void deleteData(unsigned long offset, unsigned long count) raises(DOMException);
-		void replaceData(unsigned long offset, unsigned long count, DOMString arg) raises(DOMException);
+		unsigned long        length;
+		DOMString   substringData(unsigned long offset, unsigned long count);// raises(DOMException);
+		void appendData(DOMString arg);// raises(DOMException);
+		void insertData(unsigned long offset, DOMString arg);// raises(DOMException);
+		void deleteData(unsigned long offset, unsigned long count);// raises(DOMException);
+		void replaceData(unsigned long offset, unsigned long count, DOMString arg);// raises(DOMException);
 	};
 
 	class Attr : public Node 
@@ -142,18 +130,18 @@ namespace DOM
 	public:
 		const DOMString tagName;
 		DOMString                 getAttribute(DOMString name);
-		void                      setAttribute(DOMString name, DOMString value) raises(DOMException);
-		void                      removeAttribute(DOMString name) raises(DOMException);
+		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
+		void                      removeAttribute(DOMString name);// raises(DOMException);
 		Attr                      getAttributeNode(DOMString name);
-		Attr                      setAttributeNode(Attr newAttr) raises(DOMException);
-		Attr                      removeAttributeNode(Attr oldAttr) raises(DOMException);
+		Attr                      setAttributeNode(Attr newAttr);// raises(DOMException);
+		Attr                      removeAttributeNode(Attr oldAttr);// raises(DOMException);
 		NodeList                  getElementsByTagName(DOMString name);
 		void                      normalize();
 	};
 
 	class Text : public CharacterData 
 	{
-		Text splitText(unsigned long offset) raises(DOMException);
+		Text* splitText(unsigned long offset);// raises(DOMException);
 	};
 
 	class Comment : public CharacterData

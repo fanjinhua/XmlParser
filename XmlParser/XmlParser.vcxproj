@@ -144,8 +144,15 @@
   <ItemGroup>
     <ClInclude Include="dom.h" />
     <ClInclude Include="node.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="xml_parser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="xml_parser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="XmlParser.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

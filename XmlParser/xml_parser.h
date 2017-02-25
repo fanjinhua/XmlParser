@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <cassert>
 #include "dom.h"
 
 namespace xml
@@ -10,10 +11,15 @@ namespace xml
 	class Parser
 	{
 	public:
-		void parse(const string& data);
+		Parser(Document* doc, const char * filename);
+		~Parser();
+		void parse();
 
 	private:
-		string content_;
-
+		//Document* m_root;
+		Document* root_;
+		const string& content_;
+		const string& load_file(const char* filename);
+		void parse_str();
 	};
 }
