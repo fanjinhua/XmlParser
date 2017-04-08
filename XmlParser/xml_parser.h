@@ -18,8 +18,8 @@ namespace xml
 	private:
 		//Document* m_root;
 		Document* root_;
-		const string& content_;
-		const string& load_file(const char* filename);
+		const string* content_;
+		const string* load_file(const char* filename);
 		void parse_str();
 	};
 }
