@@ -21,32 +21,7 @@ namespace DOM
 	using DOMString = std::vector<unsigned short>;
 	using std::string;
 
-	class Document : public Node
-	{
-	public:
-		Document() = default;
-		//Document(const char* filename) : filename_(filename) {};
-		//const DocumentType        doctype;
-		//const DOMImplementation   implementation;
-		//const Element             documentElement;
-		Element					  create_Element(DOMString tagName);// raises(DOMException);
-		DocumentFragment          create_DocumentFragment() noexcept;
-		Text                      create_TextNode(DOMString data) noexcept;
-		Comment                   createComment(DOMString data) noexcept;
-		CDATASection              createCDATASection(DOMString data); //raises(DOMException);
-		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
-		Attr                      createAttribute(DOMString name); //raises(DOMException);
-		EntityReference           createEntityReference(DOMString name); //raises(DOMException);
-		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
-	private:
-
-	};
-
-
-
-	class DocumentFragment : public Node {};
-
-	class Node 
+	class Node
 	{
 	public:
 
@@ -85,6 +60,33 @@ namespace DOM
 		virtual bool hasChildNodes() = 0;
 		virtual Node* cloneNode(bool deep);
 	};
+
+	class Document : public Node
+	{
+	public:
+		Document() = default;
+		//Document(const char* filename) : filename_(filename) {};
+		//const DocumentType        doctype;
+		//const DOMImplementation   implementation;
+		//const Element             documentElement;
+		Element					  create_Element(DOMString tagName);// raises(DOMException);
+		DocumentFragment          create_DocumentFragment() noexcept;
+		Text                      create_TextNode(DOMString data) noexcept;
+		Comment                   createComment(DOMString data) noexcept;
+		CDATASection              createCDATASection(DOMString data); //raises(DOMException);
+		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
+		Attr                      createAttribute(DOMString name); //raises(DOMException);
+		EntityReference           createEntityReference(DOMString name); //raises(DOMException);
+		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
+	private:
+
+	};
+
+
+
+	class DocumentFragment : public Node {};
+
+	
 
 	class NodeList 
 	{
