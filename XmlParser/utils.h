@@ -2,9 +2,26 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace xml
 {
+	using std::string;
+	using std::vector;
+	bool match(Pointer p, vector<unsigned char> field)
+	{
+		for (auto& f : field)
+			if (*p == f)
+				return true;
+		return false;
+	}
+
+	void skip(Pointer p, vector<unsigned char> field)
+	{
+		for (auto& f : field)
+			while (*p == f) 
+				++p;
+	}
 namespace DOM
 {
 	using std::string;
@@ -30,15 +47,10 @@ namespace DOM
 	template<typename typ, typ... V>
 	struct Field
 	{
-
 	};
 
-	using SPACE = Field<char, ' ', '\t', '\r', '\n'>;
-
-	template<typename T, typename... V>
-	void skip_field(T p, V... fil)
-	{
-	}
+	//template<typename... V>
+	
 
 	class tokenizer
 	{
@@ -60,6 +72,8 @@ namespace DOM
 
 				}
 			}
+		
+
 		}
 	};
 

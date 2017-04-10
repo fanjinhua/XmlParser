@@ -6,10 +6,13 @@
 
 namespace xml
 {
-	using std::string;
 	using namespace DOM;
+	typedef std::string::iterator Pointer;
 	class Parser
 	{
+	public:
+		
+
 	public:
 		Parser(Document* doc, const char * filename);
 		~Parser();
@@ -21,5 +24,6 @@ namespace xml
 		const string* content_;
 		const string* load_file(const char* filename);
 		void parse_str();
+		void parse_element(Pointer p);
 	};
 }

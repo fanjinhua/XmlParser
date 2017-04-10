@@ -7,8 +7,12 @@ namespace xml
 {
 namespace DOM
 {
+	using std::string;
+	using std::vector;
 	class Node;
 	class Element;
+	class Document;
+	class DocumentType;
 	class DocumentFragment;
 	class Text;
 	class Comment;
@@ -19,14 +23,13 @@ namespace DOM
 	class NodeList;
 
 	using DOMString = std::vector<unsigned short>;
-	using std::string;
 
 	class Node
 	{
 	public:
-
-		// NodeType
-		const unsigned short      ELEMENT_NODE = 1;
+		// node_type
+		typedef unsigned short NodeType;
+		const NodeType      ELEMENT_NODE = 1;
 		const unsigned short      ATTRIBUTE_NODE = 2;
 		const unsigned short      TEXT_NODE = 3;
 		const unsigned short      CDATA_SECTION_NODE = 4;
@@ -38,38 +41,41 @@ namespace DOM
 		const unsigned short      DOCUMENT_TYPE_NODE = 10;
 		const unsigned short      DOCUMENT_FRAGMENT_NODE = 11;
 		const unsigned short      NOTATION_NODE = 12;
-	private:
-		const DOMString& nodeName;
-		const DOMString& nodeValue;
+		virtual bool hasChildNodes() = 0;
+
+	protected:
+		Node() : node_name_(vector<unsigned short>()), node_value_(vector<unsigned short>()), node_type_(0),
+			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
+			previous_sibling_(nullptr), next_sibling_(nullptr), attributes_(nullptr), owner_document(nullptr) {}
+
+		const DOMString& node_name_;
+		const DOMString& node_value_;
 		// raises(DOMException) on setting
 		// raises(DOMException) on retrieval
-		unsigned short nodeType;
-		Node* parentNode;
-		NodeList* childNodes;
-		Node* firstChild;
-		Node* lastChild;
-		Node* previousSibling;
-		Node* nextSibling;
-		NamedNodeMap attributes;
-		Document*  ownerDocument;
+		NodeType node_type_;
+		Node* parent_;
+		NodeList* child_nodes_;
+		Node* first_child_;
+		Node* last_child_;
+		Node* previous_sibling_;
+		Node* next_sibling_;
+		NamedNodeMap* attributes_;
+		Document*  owner_document;
 
 		virtual Node* insertBefore(Node* newChild, Node* refChild); //raise(DOMException);
 		virtual Node* replaceChild(Node* newChild, Node* oldChild); //raise(DOMException);
 		virtual Node* removeChild(Node* oldChild);// raises(DOMException);
 		virtual Node* appendChild(Node* newChild); //raises(DOMException);
-		virtual bool hasChildNodes() = 0;
 		virtual Node* cloneNode(bool deep);
 	};
 
 	class Document : public Node
 	{
 	public:
-		Document() = default;
-		//Document(const char* filename) : filename_(filename) {};
-		//const DocumentType        doctype;
+		Document();
 		//const DOMImplementation   implementation;
 		//const Element             documentElement;
-		Element					  create_Element(DOMString tagName);// raises(DOMException);
+		Element					  create_Element(DOMString tag_name);// raises(DOMException);
 		DocumentFragment          create_DocumentFragment() noexcept;
 		Text                      create_TextNode(DOMString data) noexcept;
 		Comment                   createComment(DOMString data) noexcept;
@@ -78,8 +84,11 @@ namespace DOM
 		Attr                      createAttribute(DOMString name); //raises(DOMException);
 		EntityReference           createEntityReference(DOMString name); //raises(DOMException);
 		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
-	private:
 
+		virtual bool hasChildNodes() { return true; }
+	private:
+		DocumentType         doctype_;
+		Element*              element_;
 	};
 
 
@@ -149,6 +158,15 @@ namespace DOM
 	class Comment : public CharacterData
 	{
 
+	};
+
+	class DocumentType : public Node
+	{
+	public:
+		DocumentType() {}
+		DOMString name_;
+		NamedNodeMap         entities;
+		NamedNodeMap         notations;
 	};
 }
 }

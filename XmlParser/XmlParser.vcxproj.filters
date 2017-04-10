@@ -38,6 +38,9 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="dom.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="XmlParser.rc">
@@ -46,6 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="test.xml">
+      <Filter>资源文件</Filter>
+    </Xml>
+    <Xml Include="cd_catalog.xml">
+      <Filter>资源文件</Filter>
+    </Xml>
+    <Xml Include="simple.xml">
       <Filter>资源文件</Filter>
     </Xml>
   </ItemGroup>

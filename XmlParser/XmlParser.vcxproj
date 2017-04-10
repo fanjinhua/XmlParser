@@ -149,6 +149,7 @@
     <ClInclude Include="xml_parser.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dom.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="xml_parser.cpp" />
   </ItemGroup>
@@ -156,6 +157,8 @@
     <ResourceCompile Include="XmlParser.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="cd_catalog.xml" />
+    <Xml Include="simple.xml" />
     <Xml Include="test.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
