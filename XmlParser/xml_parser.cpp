@@ -7,7 +7,7 @@ namespace xml
 {
 	std::vector<unsigned char> Space{ ' ', '\t', '\r', '\n' };
 	std::vector<unsigned char> NameExclusive{ ' ', '\t', '\r', '\n', '/','>', '?' };
-	AttValue
+	//AttValue
 	Parser::Parser(Document * doc, const char * filename) : root_(doc), content_(load_file(filename))
 	{
 	}

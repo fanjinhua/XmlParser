@@ -41,8 +41,12 @@ namespace DOM
 		const unsigned short      DOCUMENT_TYPE_NODE = 10;
 		const unsigned short      DOCUMENT_FRAGMENT_NODE = 11;
 		const unsigned short      NOTATION_NODE = 12;
-		virtual bool hasChildNodes() = 0;
-
+		virtual bool has_child_nodes() = 0;
+		virtual Node* insertBefore(Node* newChild, Node* refChild); //raise(DOMException);
+		virtual Node* replaceChild(Node* newChild, Node* oldChild); //raise(DOMException);
+		virtual Node* removeChild(Node* oldChild);// raises(DOMException);
+		virtual Node* appendChild(Node* newChild); //raises(DOMException);
+		virtual Node* cloneNode(bool deep);
 	protected:
 		Node() : node_name_(vector<unsigned short>()), node_value_(vector<unsigned short>()), node_type_(0),
 			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
@@ -61,12 +65,6 @@ namespace DOM
 		Node* next_sibling_;
 		NamedNodeMap* attributes_;
 		Document*  owner_document;
-
-		virtual Node* insertBefore(Node* newChild, Node* refChild); //raise(DOMException);
-		virtual Node* replaceChild(Node* newChild, Node* oldChild); //raise(DOMException);
-		virtual Node* removeChild(Node* oldChild);// raises(DOMException);
-		virtual Node* appendChild(Node* newChild); //raises(DOMException);
-		virtual Node* cloneNode(bool deep);
 	};
 
 	class Document : public Node
@@ -82,16 +80,28 @@ namespace DOM
 		CDATASection              createCDATASection(DOMString data); //raises(DOMException);
 		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
 		Attr                      createAttribute(DOMString name); //raises(DOMException);
-		EntityReference           createEntityReference(DOMString name); //raises(DOMException);
+		//EntityReference           createEntityReference(DOMString name); //raises(DOMException);
 		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
 
-		virtual bool hasChildNodes() { return true; }
-	private:
-		DocumentType         doctype_;
+		bool has_child_nodes() override { return true; }
+	protected:
+		DocumentType*         doctype_;
 		Element*              element_;
 	};
 
-
+	class Element : public Node
+	{
+	public:
+		const DOMString tag_name_;
+		DOMString                 getAttribute(DOMString name);
+		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
+		void                      removeAttribute(DOMString name);// raises(DOMException);
+		Attr                      getAttributeNode(DOMString name);
+		Attr                      setAttributeNode(Attr newAttr);// raises(DOMException);
+		Attr                      removeAttributeNode(Attr oldAttr);// raises(DOMException);
+		NodeList                  getElementsByTagName(DOMString name);
+		void                      normalize();
+	};
 
 	class DocumentFragment : public Node {};
 
@@ -136,19 +146,6 @@ namespace DOM
 		DOMString            value;
 	};
 
-	class Element : public Node 
-	{
-	public:
-		const DOMString tagName;
-		DOMString                 getAttribute(DOMString name);
-		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
-		void                      removeAttribute(DOMString name);// raises(DOMException);
-		Attr                      getAttributeNode(DOMString name);
-		Attr                      setAttributeNode(Attr newAttr);// raises(DOMException);
-		Attr                      removeAttributeNode(Attr oldAttr);// raises(DOMException);
-		NodeList                  getElementsByTagName(DOMString name);
-		void                      normalize();
-	};
 
 	class Text : public CharacterData 
 	{
@@ -163,10 +160,11 @@ namespace DOM
 	class DocumentType : public Node
 	{
 	public:
-		DocumentType() {}
-		DOMString name_;
-		NamedNodeMap         entities;
-		NamedNodeMap         notations;
+		DocumentType():Node() {}
+		bool has_child_node() { return false; }
+		const DOMString name_;
+		//const NamedNodeMap         entities;
+		//const NamedNodeMap         notations;
 	};
 }
 }

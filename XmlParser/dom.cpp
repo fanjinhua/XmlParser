@@ -28,9 +28,9 @@ namespace DOM
 	{
 		return Attr();
 	}
-	EntityReference Document::createEntityReference(DOMString name)
-	{
-		return EntityReference();
-	}
+	//EntityReference Document::createEntityReference(DOMString name)
+	//{
+	//	return EntityReference();
+	//}
 }
 }
