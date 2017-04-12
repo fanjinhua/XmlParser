@@ -92,7 +92,8 @@ namespace DOM
 	class Element : public Node
 	{
 	public:
-		const DOMString tag_name_;
+		Element(const string& name) : Node() { for (char f : name) tag_name_.push_back(static_cast<unsigned short>(f)); }
+		DOMString tag_name_;
 		DOMString                 getAttribute(DOMString name);
 		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
 		void                      removeAttribute(DOMString name);// raises(DOMException);
