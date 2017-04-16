@@ -22,6 +22,7 @@ namespace DOM
 	class EntityReference;
 	class NodeList;
 
+	/* sequences of 16-bits */
 	using DOMString = std::vector<unsigned short>;
 
 	class Node
