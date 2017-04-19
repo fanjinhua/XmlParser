@@ -7,6 +7,7 @@
 namespace xml
 {
 	using std::string;
+	using std::u16string;
 	using std::vector;
 	bool match(Pointer p, vector<unsigned char> field)
 	{
@@ -48,9 +49,6 @@ namespace DOM
 	struct Field
 	{
 	};
-
-	//template<typename... V>
-	
 
 	class tokenizer
 	{

@@ -1,7 +1,6 @@
 #include "xml_parser.h"
 #include "utils.h"
 #include <fstream>
-#include <stack>
 
 namespace xml
 {
@@ -23,11 +22,11 @@ namespace xml
 
 	}
 
-	const string* Parser::load_file(const char * filename)
+	const PString* Parser::load_file(const char * filename)
 	{
 		std::ifstream fin(filename);
-		string* data = new string;
-		string buf;
+		PString* data = new PString;
+		PString buf;
 		while (std::getline(fin, buf))
 			*data += buf;
 
@@ -37,7 +36,7 @@ namespace xml
 
 	void Parser::parse_element(Pointer p)
 	{
-		string name;
+		PString name;
 		if (*p == '<')
 		{
 			if (match(p + 1, NameExclusive))

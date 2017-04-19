@@ -7,6 +7,7 @@
 namespace xml
 {
 	using namespace DOM;
+	typedef std::string PString;
 	typedef std::string::iterator Pointer;
 	class Parser
 	{
@@ -21,8 +22,8 @@ namespace xml
 	private:
 		//Document* m_root;
 		Document* root_;
-		const string* content_;
-		const string* load_file(const char* filename);
+		const PString* content_;
+		const PString* load_file(const char* filename);
 		void parse_str();
 		void parse_element(Pointer p);
 	};

@@ -23,7 +23,8 @@ namespace DOM
 	class NodeList;
 
 	/* sequences of 16-bits */
-	using DOMString = std::vector<unsigned short>;
+	//typedef std::u16string DOMString;
+	typedef std::string DOMString;
 
 	class Node
 	{
@@ -49,7 +50,7 @@ namespace DOM
 		virtual Node* appendChild(Node* newChild); //raises(DOMException);
 		virtual Node* cloneNode(bool deep);
 	protected:
-		Node() : node_name_(vector<unsigned short>()), node_value_(vector<unsigned short>()), node_type_(0),
+		Node() : node_name_(DOMString()), node_value_(DOMString()), node_type_(0),
 			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
 			previous_sibling_(nullptr), next_sibling_(nullptr), attributes_(nullptr), owner_document(nullptr) {}
 
@@ -74,7 +75,8 @@ namespace DOM
 		Document();
 		//const DOMImplementation   implementation;
 		//const Element             documentElement;
-		Element					  create_Element(DOMString tag_name);// raises(DOMException);
+		virtual bool has_child_nodes();
+		Element					  create_Element(const DOMString& tag_name);// raises(DOMException);
 		DocumentFragment          create_DocumentFragment() noexcept;
 		Text                      create_TextNode(DOMString data) noexcept;
 		Comment                   createComment(DOMString data) noexcept;
@@ -84,7 +86,6 @@ namespace DOM
 		//EntityReference           createEntityReference(DOMString name); //raises(DOMException);
 		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
 
-		bool has_child_nodes() override { return true; }
 	protected:
 		DocumentType*         doctype_;
 		Element*              element_;
@@ -93,7 +94,7 @@ namespace DOM
 	class Element : public Node
 	{
 	public:
-		Element(const string& name) : Node() { for (char f : name) tag_name_.push_back(static_cast<unsigned short>(f)); }
+		Element(const DOMString& name) : Node(), tag_name_(name) {}
 		DOMString tag_name_;
 		DOMString                 getAttribute(DOMString name);
 		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
