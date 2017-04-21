@@ -14,6 +14,7 @@ namespace DOM
 	class Document;
 	class DocumentType;
 	class DocumentFragment;
+	class NamedNodeMap;
 	class Text;
 	class Comment;
 	class CDATASection;
@@ -32,23 +33,23 @@ namespace DOM
 		// node_type
 		typedef unsigned short NodeType;
 		const NodeType      ELEMENT_NODE = 1;
-		const unsigned short      ATTRIBUTE_NODE = 2;
-		const unsigned short      TEXT_NODE = 3;
-		const unsigned short      CDATA_SECTION_NODE = 4;
-		const unsigned short      ENTITY_REFERENCE_NODE = 5;
-		const unsigned short      ENTITY_NODE = 6;
-		const unsigned short      PROCESSING_INSTRUCTION_NODE = 7;
-		const unsigned short      COMMENT_NODE = 8;
-		const unsigned short      DOCUMENT_NODE = 9;
-		const unsigned short      DOCUMENT_TYPE_NODE = 10;
-		const unsigned short      DOCUMENT_FRAGMENT_NODE = 11;
-		const unsigned short      NOTATION_NODE = 12;
+		const NodeType      ATTRIBUTE_NODE = 2;
+		const NodeType      TEXT_NODE = 3;
+		const NodeType      CDATA_SECTION_NODE = 4;
+		const NodeType      ENTITY_REFERENCE_NODE = 5;
+		const NodeType      ENTITY_NODE = 6;
+		const NodeType      PROCESSING_INSTRUCTION_NODE = 7;
+		const NodeType      COMMENT_NODE = 8;
+		const NodeType      DOCUMENT_NODE = 9;
+		const NodeType      DOCUMENT_TYPE_NODE = 10;
+		const NodeType      DOCUMENT_FRAGMENT_NODE = 11;
+		const NodeType      NOTATION_NODE = 12;
 		virtual bool has_child_nodes() = 0;
-		virtual Node* insertBefore(Node* newChild, Node* refChild); //raise(DOMException);
-		virtual Node* replaceChild(Node* newChild, Node* oldChild); //raise(DOMException);
-		virtual Node* removeChild(Node* oldChild);// raises(DOMException);
-		virtual Node* appendChild(Node* newChild); //raises(DOMException);
-		virtual Node* cloneNode(bool deep);
+		virtual Node* insert_before(Node* newChild, Node* refChild); //raise(DOMException);
+		virtual Node* replace_child(Node* newChild, Node* oldChild); //raise(DOMException);
+		virtual Node* remove_child(Node* oldChild);// raises(DOMException);
+		virtual Node* append_child(Node* newChild); //raises(DOMException);
+		virtual Node* clone_node(bool deep);
 	protected:
 		Node() : node_name_(DOMString()), node_value_(DOMString()), node_type_(0),
 			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
@@ -75,16 +76,16 @@ namespace DOM
 		Document();
 		//const DOMImplementation   implementation;
 		//const Element             documentElement;
-		virtual bool has_child_nodes();
-		Element					  create_Element(const DOMString& tag_name);// raises(DOMException);
-		DocumentFragment          create_DocumentFragment() noexcept;
-		Text                      create_TextNode(DOMString data) noexcept;
-		Comment                   createComment(DOMString data) noexcept;
-		CDATASection              createCDATASection(DOMString data); //raises(DOMException);
-		ProcessingInstruction     createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
-		Attr                      createAttribute(DOMString name); //raises(DOMException);
+		bool has_child_nodes() override { return false; }
+		Element*				  create_Element(const DOMString& tag_name);// raises(DOMException);
+		DocumentFragment*         create_DocumentFragment() noexcept;
+		Text*                     create_TextNode(DOMString data) noexcept;
+		Comment*                  createComment(DOMString data) noexcept;
+		CDATASection*             createCDATASection(DOMString data); //raises(DOMException);
+		ProcessingInstruction*    createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
+		Attr*                     createAttribute(DOMString name); //raises(DOMException);
 		//EntityReference           createEntityReference(DOMString name); //raises(DOMException);
-		NodeList                  getElementsByTagName(DOMString tagname) noexcept;
+		NodeList*                 getElementsByTagName(DOMString tagname) noexcept;
 
 	protected:
 		DocumentType*         doctype_;
@@ -94,7 +95,9 @@ namespace DOM
 	class Element : public Node
 	{
 	public:
+		Element(): Node() {}
 		Element(const DOMString& name) : Node(), tag_name_(name) {}
+		bool has_child_nodes() override { return false; }
 		DOMString tag_name_;
 		DOMString                 getAttribute(DOMString name);
 		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
@@ -106,6 +109,7 @@ namespace DOM
 		void                      normalize();
 	};
 
+#if 0
 	class DocumentFragment : public Node {};
 
 	
@@ -169,5 +173,6 @@ namespace DOM
 		//const NamedNodeMap         entities;
 		//const NamedNodeMap         notations;
 	};
+#endif 
 }
 }

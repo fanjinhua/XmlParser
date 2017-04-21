@@ -19,6 +19,10 @@ namespace xml
 	void Parser::parse()
 	{
 		assert(root_ != nullptr);
+		Pointer p;
+		Node *node = new Element();
+		root_->append_child(node);
+		parse_element(p, node);
 
 	}
 
@@ -34,8 +38,9 @@ namespace xml
 		return data;
 	}
 
-	void Parser::parse_element(Pointer p)
+	void Parser::parse_element(Pointer p, Node* node)
 	{
+		Node* e;
 		PString name;
 		if (*p == '<')
 		{
@@ -43,16 +48,22 @@ namespace xml
 				throw ParseException("NameStartChar doesn't match.");
 			while (!match(p, Space))
 				name += *p++;
+			e = new Element(name);
+			skip(p, Space);
+			while (*p != '>')  /* Attributes */
+			{
+				name = "";
+				while (!match(p, Space))
+					name += *p++;
+				skip(p, Space);
+				if (*p == '=')
+					++p;
+				skip(p, Space);
+			}
+			if (*p != '>')
+				throw ParseException("start tag doesn't match.");
 
-			/* Attribute */
-			name = "";
-			skip(p, Space);
-			while (!match(p, Space))
-				name += *p++;
-			skip(p, Space);
-			if (*p == '=')
-				++p;
-			skip(p, Space);
+			/* text */
 
 		}
 	}

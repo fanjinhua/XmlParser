@@ -25,6 +25,6 @@ namespace xml
 		const PString* content_;
 		const PString* load_file(const char* filename);
 		void parse_str();
-		void parse_element(Pointer p);
+		void parse_element(Pointer p, Node* node);
 	};
 }
