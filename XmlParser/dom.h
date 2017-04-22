@@ -53,6 +53,7 @@ namespace DOM
 
 	public:
 		NodeType node_type_;
+		Document*  owner_doc_;
 		DOMString node_name_;
 		DOMString node_value_;
 		Node* parent_;
@@ -62,33 +63,40 @@ namespace DOM
 		Node* pre_sibling_;
 		Node* next_sibling_;
 		//NamedNodeMap* attrs_;
-		Document*  owner_document;
 	protected:
-		Node() : node_type_(0), node_name_(DOMString()), node_value_(DOMString()),
+		Node() : node_type_(0), owner_doc_(nullptr), node_name_(DOMString()), node_value_(DOMString()),
 			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
-			pre_sibling_(nullptr), next_sibling_(nullptr),/* attrs_(nullptr), */owner_document(nullptr) {}
-		Node(NodeType type, DOMString name = DOMString(), DOMString value = DOMString()) : \
-			node_type_(type), node_name_(name), node_value_(value),
+			pre_sibling_(nullptr), next_sibling_(nullptr)/* attrs_(nullptr), */ {}
+		Node(NodeType type, Document*  owner_doc = nullptr, DOMString name = DOMString(), DOMString value = DOMString()) : \
+			node_type_(type), owner_doc_(owner_doc), node_name_(name), node_value_(value),
 			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
-			pre_sibling_(nullptr), next_sibling_(nullptr),/* attrs_(nullptr), */owner_document(nullptr) {}
+			pre_sibling_(nullptr), next_sibling_(nullptr)/* attrs_(nullptr), */ {}
 	};
 
 	class Document : public Node
 	{
 	public:
-		Document();
+		Document(): Node(DOCUMENT_NODE) {}
+		//Document() : Node(DOCUMENT_NODE) {}
+		~Document();
 		//const DOMImplementation   implementation;
 		//const Element             documentElement;
 		bool has_child_nodes() override { return false; }
-		Element*				  create_Element(const DOMString& tag_name);// raises(DOMException);
+		Element*				  create_Element(const DOMString& tag_name)/* raises(DOMException);*/
+		{
+			return new Element(tag_name, this);
+		}
 		DocumentFragment*         create_DocumentFragment() noexcept;
-		Text*                     create_TextNode(DOMString data) noexcept;
-		Comment*                  createComment(DOMString data) noexcept;
-		CDATASection*             createCDATASection(DOMString data); //raises(DOMException);
-		ProcessingInstruction*    createProcessingInstruction(DOMString target, DOMString data);// raises(DOMException);
-		Attr*                     createAttribute(DOMString name); //raises(DOMException);
+		Text*                     create_TextNode(const DOMString& data) noexcept;
+		Comment*                  create_Comment(const DOMString& data) noexcept;
+		CDATASection*             create_CDATASection(const DOMString& data); //raises(DOMException);
+		ProcessingInstruction*    create_ProcessingInstruction(const DOMString& target, const DOMString& data);// raises(DOMException);
+		Attr*                     create_Attribute(const DOMString& name) /*raises(DOMException);*/
+		{
+			return new Attr(name, this);
+		}
 		//EntityReference           createEntityReference(DOMString name); //raises(DOMException);
-		NodeList*                 getElementsByTagName(DOMString tagname) noexcept;
+		NodeList*                 get_elem_by_tag(const DOMString& tagname) noexcept;
 
 	protected:
 		DocumentType*         doctype_;
@@ -106,11 +114,15 @@ namespace DOM
 	class Attr : public Node
 	{
 	public:
-		Attr(const DOMString& name) : Node(ATTRIBUTE_NODE, name), name_(name) {}
+		Attr(const DOMString& name, Document*  owner_doc) : Node(ATTRIBUTE_NODE, owner_doc, name), name_(name) {}
 		void set_value(const DOMString& value)
 		{
 			specified_ = true;
 			value_ = value;
+		}
+		DOMString get_value()
+		{
+			return value_;
 		}
 		DOMString            name_;
 		bool              specified_;
@@ -155,10 +167,13 @@ namespace DOM
 	{
 	public:
 		Element() : Node(ELEMENT_NODE) {}
-		Element(const DOMString& name) : Node(ELEMENT_NODE, name), tag_name_(name) {}
+		Element(const DOMString& name, Document*  owner_doc) : Node(ELEMENT_NODE, owner_doc, name), tag_name_(name) {}
 		bool has_child_nodes() override { return false; }
 		DOMString tag_name_;
-		DOMString                 get_attr(const DOMString& name) noexcept;
+		DOMString                 get_attr(const DOMString& name) noexcept
+		{
+			return get_attr_node(name)->get_value();
+		}
 		void                      set_attr(const DOMString& name, const DOMString& value)// raises(DOMException);
 		{
 			Attr* new_attr = new Attr(name);
@@ -168,10 +183,13 @@ namespace DOM
 		void                      remove_attr(DOMString name);// raises(DOMException);
 	private:
 		NamedNodeMap			  attrs_;
-		Attr*                     get_attr_node(DOMString name) noexcept;
+		Attr*                     get_attr_node(const DOMString& name) noexcept
+		{
+			return dynamic_cast<Attr*>(attrs_.get_named_item(name));
+		}
 		Attr*                     set_attr_node(Attr* new_attr)// raises(DOMException);
 		{
-			return attrs_.set_named_item(new_attr);
+			return dynamic_cast<Attr*>(attrs_.set_named_item(new_attr));
 		}
 		Attr*                     remove_attri_node(Attr* old_attr);// raises(DOMException);
 		NodeList*                 get_elem_by_tag(DOMString name) noexcept;
