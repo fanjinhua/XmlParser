@@ -2,13 +2,14 @@
 
 #include <vector>
 #include <string>
-
+#include <map>
 namespace xml
 {
 namespace DOM
 {
 	using std::string;
 	using std::vector;
+	using std::map;
 	class Node;
 	class Element;
 	class Document;
@@ -30,7 +31,6 @@ namespace DOM
 	class Node
 	{
 	public:
-		// node_type
 		typedef unsigned short NodeType;
 		const NodeType      ELEMENT_NODE = 1;
 		const NodeType      ATTRIBUTE_NODE = 2;
@@ -44,30 +44,33 @@ namespace DOM
 		const NodeType      DOCUMENT_TYPE_NODE = 10;
 		const NodeType      DOCUMENT_FRAGMENT_NODE = 11;
 		const NodeType      NOTATION_NODE = 12;
-		virtual bool has_child_nodes() = 0;
+		virtual bool has_child_nodes();
 		virtual Node* insert_before(Node* newChild, Node* refChild); //raise(DOMException);
 		virtual Node* replace_child(Node* newChild, Node* oldChild); //raise(DOMException);
 		virtual Node* remove_child(Node* oldChild);// raises(DOMException);
 		virtual Node* append_child(Node* newChild); //raises(DOMException);
 		virtual Node* clone_node(bool deep);
-	protected:
-		Node() : node_name_(DOMString()), node_value_(DOMString()), node_type_(0),
-			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
-			previous_sibling_(nullptr), next_sibling_(nullptr), attributes_(nullptr), owner_document(nullptr) {}
 
-		const DOMString& node_name_;
-		const DOMString& node_value_;
-		// raises(DOMException) on setting
-		// raises(DOMException) on retrieval
+	public:
 		NodeType node_type_;
+		DOMString node_name_;
+		DOMString node_value_;
 		Node* parent_;
 		NodeList* child_nodes_;
 		Node* first_child_;
 		Node* last_child_;
-		Node* previous_sibling_;
+		Node* pre_sibling_;
 		Node* next_sibling_;
-		NamedNodeMap* attributes_;
+		//NamedNodeMap* attrs_;
 		Document*  owner_document;
+	protected:
+		Node() : node_type_(0), node_name_(DOMString()), node_value_(DOMString()),
+			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
+			pre_sibling_(nullptr), next_sibling_(nullptr),/* attrs_(nullptr), */owner_document(nullptr) {}
+		Node(NodeType type, DOMString name = DOMString(), DOMString value = DOMString()) : \
+			node_type_(type), node_name_(name), node_value_(value),
+			parent_(nullptr), child_nodes_(nullptr), first_child_(nullptr), last_child_(nullptr),
+			pre_sibling_(nullptr), next_sibling_(nullptr),/* attrs_(nullptr), */owner_document(nullptr) {}
 	};
 
 	class Document : public Node
@@ -92,42 +95,92 @@ namespace DOM
 		Element*              element_;
 	};
 
-	class Element : public Node
-	{
-	public:
-		Element(): Node() {}
-		Element(const DOMString& name) : Node(), tag_name_(name) {}
-		bool has_child_nodes() override { return false; }
-		DOMString tag_name_;
-		DOMString                 getAttribute(DOMString name);
-		void                      setAttribute(DOMString name, DOMString value);// raises(DOMException);
-		void                      removeAttribute(DOMString name);// raises(DOMException);
-		Attr                      getAttributeNode(DOMString name);
-		Attr                      setAttributeNode(Attr newAttr);// raises(DOMException);
-		Attr                      removeAttributeNode(Attr oldAttr);// raises(DOMException);
-		NodeList                  getElementsByTagName(DOMString name);
-		void                      normalize();
-	};
-
-#if 0
-	class DocumentFragment : public Node {};
-
 	
 
-	class NodeList 
+	class DocumentFragment : public Node 
 	{
 	public:
-		Node* item(unsigned long index);
-	private:
-		const unsigned long length;
+		DocumentFragment(): Node() {}
+	};
+
+	class Attr : public Node
+	{
+	public:
+		Attr(const DOMString& name) : Node(ATTRIBUTE_NODE, name), name_(name) {}
+		void set_value(const DOMString& value)
+		{
+			specified_ = true;
+			value_ = value;
+		}
+		DOMString            name_;
+		bool              specified_;
+		DOMString            value_;
 	};
 
 	class NamedNodeMap 
 	{
 	public:
-		Node* getNamedItem(DOMString name);
-		Node* setNamedItem(Node* arg);// raises(DOMException);
-		Node* removeNamedItem(DOMString name);// raises(DOMException);
+		NamedNodeMap(): length_(0) {}
+		Node* get_named_item(DOMString node_name) noexcept
+		{
+			return map_.count(node_name) ? map_[node_name] : nullptr;
+		}
+		Node* set_named_item(Node* new_node)// raises(DOMException);
+		{
+			Node* old_node = nullptr;
+			if (map_.count(new_node->node_name_))
+				old_node = map_[new_node->node_name_], length_--;
+			
+			map_[new_node->node_name_] = new_node;
+			length_++;
+			return old_node;
+		}
+		Node* remove_named_Item(DOMString node_name)// raises(DOMException);
+		{
+			Node* node = nullptr;
+			if (map_.count(node_name))
+			{
+				node = map_[node_name];
+				map_.erase(node_name);
+				length_--;
+			}
+			return node;
+		}
+		Node* item(unsigned long index) noexcept;
+	private:
+		unsigned long length_;
+		std::map<DOMString, Node*> map_;
+	};
+	class Element : public Node
+	{
+	public:
+		Element() : Node(ELEMENT_NODE) {}
+		Element(const DOMString& name) : Node(ELEMENT_NODE, name), tag_name_(name) {}
+		bool has_child_nodes() override { return false; }
+		DOMString tag_name_;
+		DOMString                 get_attr(const DOMString& name) noexcept;
+		void                      set_attr(const DOMString& name, const DOMString& value)// raises(DOMException);
+		{
+			Attr* new_attr = new Attr(name);
+			new_attr->set_value(value);
+			this->set_attr_node(new_attr);
+		}
+		void                      remove_attr(DOMString name);// raises(DOMException);
+	private:
+		NamedNodeMap			  attrs_;
+		Attr*                     get_attr_node(DOMString name) noexcept;
+		Attr*                     set_attr_node(Attr* new_attr)// raises(DOMException);
+		{
+			return attrs_.set_named_item(new_attr);
+		}
+		Attr*                     remove_attri_node(Attr* old_attr);// raises(DOMException);
+		NodeList*                 get_elem_by_tag(DOMString name) noexcept;
+		void                      normalize();
+	};
+#if 0
+	class NodeList 
+	{
+	public:
 		Node* item(unsigned long index);
 	private:
 		const unsigned long length;
@@ -146,13 +199,7 @@ namespace DOM
 		void replaceData(unsigned long offset, unsigned long count, DOMString arg);// raises(DOMException);
 	};
 
-	class Attr : public Node 
-	{
-		DOMString            name;
-		bool              specified;
-		DOMString            value;
-	};
-
+	
 
 	class Text : public CharacterData 
 	{

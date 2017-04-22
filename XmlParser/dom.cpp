@@ -11,10 +11,12 @@ namespace DOM
 	{
 		return false;
 	}
-	Element Document::create_Element(const DOMString & tag_name)
+	Element* Document::create_Element(const DOMString & tag_name)
 	{
-		return Element();
+		return new Element();
 	}
+	
+	
 	//EntityReference Document::createEntityReference(DOMString name)
 	//{
 	//	return EntityReference();
