@@ -163,6 +163,7 @@ namespace DOM
 		unsigned long length_;
 		std::map<DOMString, Node*> map_;
 	};
+
 	class Element : public Node
 	{
 	public:
@@ -195,16 +196,8 @@ namespace DOM
 		NodeList*                 get_elem_by_tag(DOMString name) noexcept;
 		void                      normalize();
 	};
-#if 0
-	class NodeList 
-	{
-	public:
-		Node* item(unsigned long index);
-	private:
-		const unsigned long length;
-	};
 
-	class CharacterData : public Node 
+	class CharacterData : public Node
 	{
 		DOMString            data;
 		// raises(DOMException) on setting
@@ -217,12 +210,21 @@ namespace DOM
 		void replaceData(unsigned long offset, unsigned long count, DOMString arg);// raises(DOMException);
 	};
 
-	
 
-	class Text : public CharacterData 
+
+	class Text : public CharacterData
 	{
 		Text* splitText(unsigned long offset);// raises(DOMException);
 	};
+#if 0
+	class NodeList 
+	{
+	public:
+		Node* item(unsigned long index);
+	private:
+		const unsigned long length;
+	};
+
 
 	class Comment : public CharacterData
 	{
